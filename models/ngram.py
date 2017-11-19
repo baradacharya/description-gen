@@ -69,7 +69,7 @@ class NGramLanguageModel(object):
                     if i < j:
                         continue
                     ngram = [tuple(sentence[i - j:i])]
-                    self._counts[j].update(ngram)
+                    self._counts[j].update(ngram) #will update ngram collection dictionary depending upon tuple size
 
     def perplexity(self, x):
         """Measures the perplexity of a dataset.
@@ -106,8 +106,8 @@ class NGramLanguageModel(object):
             log2( p (word | prev))
         """
         n = self.n
-        v = self._counts[0][()]
-        ngram = tuple([*prev[-(n - 1):], word])
+        v = self._counts[0][()] #total words
+        ngram = tuple(prev[-(n - 1):]+ [word])
 
         def _recursion(ngram, i):
             try:
@@ -157,3 +157,11 @@ class NGramLanguageModel(object):
     def alpha(self, value):
         assert value >= 0, "alpha must be a non-negative real number"
         self._alpha = value
+
+if __name__ == "__main__":
+    
+    lm = NGramLanguageModel(n=3,alpha=0)
+    lm.fit([['I', 'am', 'Sam'],['Sam', 'am', 'Ram']])
+    print(lm.perplexity([['I', 'am', 'Sam']]))
+    print(lm.perplexity([['Sam', 'am', 'I']]))
+    print(lm.perplexity([['green', 'eggs', 'and', 'ham']]))
